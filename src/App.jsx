@@ -1,30 +1,39 @@
 import './App.css'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Button } from "@/components/ui/button"
+import UserSignUp from './pages/user/UserSignUp';
+import UserLogin from './pages/user/UserLogin';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import {Avatar, AvatarGroup, AvatarIcon} from "@nextui-org/avatar";
+import NavbarAll from './components/miscellaneous/NavbarAll';
+import UserHomepage from './pages/user/UserHomepage';
+import MyProfilePage from './pages/user/MyProfilePage';
+
 
 function App() {
-  const [message, setMessage] = useState('')
 
-  const handle = () => {
-    axios.get('https://social-media-backend-hq87.onrender.com/api')
-    .then((response) => {
-      setMessage(response.data.message)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-  }
-  
 
   return (
-    <>
-     <div>
-      <Button onClick = {handle} >Click me</Button>
-      {message && <h1>{message}</h1>}
-    </div>
-      
-    </>
+    <div>
+
+      <NavbarAll/>
+     
+ 
+    
+    <BrowserRouter>
+      <div
+       
+      >
+        <Routes>
+          <Route path='/user/signup' element={<UserSignUp/>} />
+          <Route path='/user/login' element={<UserLogin/>} />
+          <Route path='/user/homepage' element={<UserHomepage/>} />
+          
+          <Route path = '/user/myprofile' element = {<MyProfilePage/>} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  </div>
   )
 }
 

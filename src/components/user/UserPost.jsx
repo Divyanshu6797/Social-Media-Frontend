@@ -1,7 +1,10 @@
 import React from "react";
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
+import { HeartIcon } from "lucide-react";
 
-export default function UserPost() {
+export default function UserPost({post}) {
+  
+  
   return (
     <div className="my-4 max-w-[700px] px-8"> 
       <Card
@@ -10,9 +13,9 @@ export default function UserPost() {
       >
         <CardHeader className="absolute z-10 top-1 flex-col items-start">
           <p className="text-tiny text-white/60 uppercase font-bold">
-            username
+            {post.postedBy}
           </p>
-          <h4 className="text-white/90 font-medium text-xl">caption</h4>
+          <h4 className="text-white/90 font-medium text-xl">{post.caption}</h4>
         </CardHeader>
         <Image
           removeWrapper
@@ -22,7 +25,7 @@ export default function UserPost() {
         />
         <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
           <Button radius="full" size="sm">
-            Get App
+            <HeartIcon/>
           </Button>
         </CardFooter>
       </Card>

@@ -1,48 +1,69 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import { Textarea } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
+import { CameraIcon } from "../miscellaneous/CameraIcon";
+import axios from "axios";
 
-function UserHomepagePosting() {
-    const handleImageUpload = () => {
-        // Implement your image upload logic here
-        console.log('Image upload functionality');
+function UserHomepagePosting({ onPostCreated }) {
+  const [caption, setCaption] = useState("");
+  const [image, setImage] = useState("");
+  const [err, setErr] = useState("");
+
+  const createPost = async () => {
+    try {
+      const headers = {
+        Authorization:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NTk4ODk1N2U5NjI3ZjJhYjg5YzIzOSIsImlhdCI6MTcxNzE0MzcwMSwiZXhwIjoxNzE3NDAyOTAxfQ.0lW4Vh49apFh_fgInQY7HlPVStKf23te1Aq_0tUfpCU",
       };
-    
+      const response = await axios.post(
+        "/api/user/post/addpost",
+        {
+          caption: caption,
+          imageUrl: image,
+        },
+        { headers }
+      );
+      const post = await response.data;
+      onPostCreated(post);
+      console.log("post created", post);
+    } catch (error) {
+      console.error("Error creating post:", error);
+      setErr("Error creating post");
+    }
+  };
+  useEffect(() => {}, []);
+
   return (
     <div className="w-full ml-0 md:ml-0 max-w-[700px] mx-auto px-4 py-8 bg-white rounded-lg shadow-lg">
-       <Textarea
-          key="flat"
-          variant="flat"
-          labelPlacement="outside"
-          placeholder="What's on your mind?"
-          className=""
-        />
+      <Textarea
+        key="flat"
+        variant="flat"
+        labelPlacement="outside"
+        placeholder="What's on your mind?"
+        className=""
+        value={caption}
+        onChange={(e) => setCaption(e.target.value)}
+      />
 
-        <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <Button
           variant="flat"
           color="primary"
           size="small"
-          onClick={handleImageUpload}
+          onClick={createPost}
           className="flex items-center space-x-2 my-5"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M2.293 4.293a1 1 0 0 1 1.414-1.414L10 10.586l5.293-5.293a1 1 0 0 1 1.414 1.414L11.414 12l5.293 5.293a1 1 0 1 1-1.414 1.414L10 13.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L8.586 12 3.293 6.707a1 1 0 0 1-1.414-1.414z"
-            />
-          </svg>
-          <span>Upload Image</span>
+          <CameraIcon />
         </Button>
-        <Button radius="full" className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white my-5">
+        <Button
+          radius="full"
+          className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white my-5"
+          onClick={createPost}
+        >
           Post
         </Button>
       </div>
+      {err && <p className="text-red-500 text-sm">{err}</p>}
     </div>
   );
 }

@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'https://social-media-backend-hq87.onrender.com',
+      '/api': 'http://localhost:3000/',
         
     },
   },

@@ -15,6 +15,7 @@ function UserSignUp() {
   const[password, setPassword] = useState('')
   const[confirmPassword, setConfirmPassword] = useState('')
   const[err, setErr] = useState('')
+  const [currentUserId, setCurrentUserId] = useState("")
   const navigate = useNavigate();
 
 

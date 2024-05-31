@@ -6,6 +6,7 @@ import axios from "axios";
 
 function UserHomepage() {
   const [allPosts, setAllPosts] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState("")
   const fetchPosts = async () => {
     try {
       const headers = {
@@ -24,7 +25,31 @@ function UserHomepage() {
     }
   };
 
+  const findCurrentUser = async () => {
+    try {
+      
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+      };
+
+      const response = await axios.get('/api/user/getuserid', {
+        headers,
+        
+      });
+      const userId = response.data;
+      console.log("userId", userId);
+      setCurrentUserId(userId);
+      
+    } catch (error) {
+      console.error("Error finding current user:", error);
+    }
+
+  }
+
+
   useEffect(() => {
+    findCurrentUser();
     fetchPosts();
     console.log(allPosts);
   }, []);
@@ -40,7 +65,7 @@ function UserHomepage() {
           <UserHomepagePosting onPostCreated={handlePostCreated}/>
 
           {allPosts && allPosts.map((post) => (
-            <UserPost key={post._id} post={post} />
+            <UserPost currentUserId = {currentUserId} key={post._id} post={post} />
           ))
         }
 

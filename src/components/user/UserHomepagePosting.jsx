@@ -11,9 +11,10 @@ function UserHomepagePosting({ onPostCreated }) {
 
   const createPost = async () => {
     try {
+      const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NTk4ODk1N2U5NjI3ZjJhYjg5YzIzOSIsImlhdCI6MTcxNzE0MzcwMSwiZXhwIjoxNzE3NDAyOTAxfQ.0lW4Vh49apFh_fgInQY7HlPVStKf23te1Aq_0tUfpCU",
+          token,
       };
       const response = await axios.post(
         "/api/user/post/addpost",

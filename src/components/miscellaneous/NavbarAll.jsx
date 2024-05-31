@@ -1,13 +1,20 @@
 import React from 'react'
 import { AcmeLogo } from './AcmeLogo'
 
-import { Link as RouterLink } from 'react-router-dom';
+
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Button } from '@nextui-org/react';
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
 
 
 
 
 function NavbarAll() {
+  const navigate = useNavigate();
+  const logout = () => {
+    localStorage.removeItem("token");
+    return navigate("/");
+  }
   return (
     <Navbar>
     <NavbarBrand>
@@ -30,6 +37,13 @@ function NavbarAll() {
         <Link href= "/user/login" color="foreground">
           Login
         </Link>
+        
+      </NavbarItem>
+      <NavbarItem>
+        <Button onClick = {logout} href= "/user/login" color="foreground">
+          Logout
+        </Button>
+        
       </NavbarItem>
     </NavbarContent>
 

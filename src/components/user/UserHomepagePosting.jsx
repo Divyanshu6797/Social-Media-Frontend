@@ -17,7 +17,7 @@ function UserHomepagePosting({ onPostCreated }) {
           token,
       };
       const response = await axios.post(
-        "/api/user/post/addpost",
+        "https://social-media-backend-hq87.onrender.com/api/user/post/addpost",
         {
           caption: caption,
           imageUrl: image,

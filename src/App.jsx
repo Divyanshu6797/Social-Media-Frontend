@@ -20,6 +20,7 @@ function App() {
       <NavbarAll />
         <div>
           <Routes>
+            <Route path="/" element={<UserLogin />} />
             <Route path="/user/signup" element={<UserSignUp />} />
             <Route path="/user/login" element={<UserLogin />} />
             <Route path="/user/homepage" element={<UserHomepage />} />

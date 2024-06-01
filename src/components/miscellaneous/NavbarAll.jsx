@@ -11,6 +11,9 @@ import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, DropdownItem, Drop
 
 function NavbarAll() {
   const navigate = useNavigate();
+  const handleProfile = () => {
+    return navigate("/user/myprofile");
+  }
   const logout = () => {
     localStorage.removeItem("auth-token");
     return navigate("/");
@@ -65,7 +68,7 @@ function NavbarAll() {
             <p className="font-semibold">Signed in as</p>
             <p className="font-semibold">zoey@example.com</p>
           </DropdownItem>
-          <DropdownItem key="settings">My Settings</DropdownItem>
+          <DropdownItem onClick={handleProfile} key="settings">My Profile</DropdownItem>
           <DropdownItem key="team_settings">Team Settings</DropdownItem>
           <DropdownItem key="analytics">Analytics</DropdownItem>
           <DropdownItem key="system">System</DropdownItem>

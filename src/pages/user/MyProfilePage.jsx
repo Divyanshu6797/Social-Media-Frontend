@@ -45,7 +45,7 @@ const MyProfilePage = () => {
         Authorization:
           token
       };
-      const response = await axios.get("http://localhost:3000/api/user/post/userposts", {
+      const response = await axios.get("https://social-media-backend-hq87.onrender.com/api/user/post/userposts", {
         
         headers
       });

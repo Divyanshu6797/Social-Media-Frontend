@@ -17,7 +17,7 @@ function UserLogin() {
       e.preventDefault();
       const user = { emailID, password };
       try {
-        const response = await axios.post("/api/user/login", user);
+        const response = await axios.post("https://social-media-backend-hq87.onrender.com/api/user/login", user);
 
         if (response.status == 200) {
           const { token } = response.data;

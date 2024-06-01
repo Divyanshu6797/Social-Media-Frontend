@@ -25,7 +25,7 @@ function UserSignUp() {
       return;
     }
     try {
-      const response =await axios.post("/api/user/signup", {
+      const response =await axios.post("https://social-media-backend-hq87.onrender.com/api/user/signup", {
         name,
         username,
         emailID,

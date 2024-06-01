@@ -43,9 +43,10 @@ export default function UserPost({currentUserId, post }) {
         const token = localStorage.getItem("auth-token");
         const headers = {
           Authorization: token,
+          "Content-Type": "application/json",
         };
         const response = await axios.post(
-          "/api/user/comment/addcomment",
+          "https://social-media-backend-hq87.onrender.com/api/user/comment/addcomment",
           {
             content: commentText,
             postId: post._id,
@@ -72,8 +73,9 @@ export default function UserPost({currentUserId, post }) {
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
+        "Content-Type": "application/json",
       };
-      const response = await axios.get("/api/user/comment/fetchcomments", {
+      const response = await axios.get("https://social-media-backend-hq87.onrender.com/api/user/comment/fetchcomments", {
         params: {
           postId: post._id,
         },
@@ -107,9 +109,10 @@ export default function UserPost({currentUserId, post }) {
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
+        "Content-Type": "application/json",
       };
       await axios.put(
-        "/api/user/comment/updatecomment",
+        "https://social-media-backend-hq87.onrender.com/api/user/comment/updatecomment",
         {
           commentId: editCommentId,
           content: editCommentContent,
@@ -141,9 +144,10 @@ export default function UserPost({currentUserId, post }) {
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
+        "Content-Type": "application/json",
       };
   
-      const response = await axios.delete('/api/user/comment/deletecomment', {
+      const response = await axios.delete('https://social-media-backend-hq87.onrender.com/api/user/comment/deletecomment', {
         headers,
         data: { commentId },
       });

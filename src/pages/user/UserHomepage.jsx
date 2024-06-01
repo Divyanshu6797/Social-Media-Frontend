@@ -9,12 +9,13 @@ function UserHomepage() {
   const [currentUserId, setCurrentUserId] = useState("")
   const fetchPosts = async () => {
     try {
+      const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NThjMmNiZGE4YjNjNzA1ODgyYWEzYiIsImlhdCI6MTcxNzEyODY0NiwiZXhwIjoxNzE3Mzg3ODQ2fQ.lxsJ-NQLAfpn2XGMijTeLgUlpFYS1TZ5kOwxGQk_j3Y",
+          token
       };
       const response = await axios.get(
-        "/api/user/post/allposts",
+        "https://social-media-backend-hq87.onrender.com/api/user/post/allposts",
         { headers }
       );
       const posts = await response.data;
@@ -33,7 +34,7 @@ function UserHomepage() {
         Authorization: token,
       };
 
-      const response = await axios.get('/api/user/getuserid', {
+      const response = await axios.get('https://social-media-backend-hq87.onrender.com/api/user/getuserid', {
         headers,
         
       });

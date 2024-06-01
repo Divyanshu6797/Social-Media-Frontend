@@ -12,7 +12,7 @@ import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, DropdownItem, Drop
 function NavbarAll() {
   const navigate = useNavigate();
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("auth-token");
     return navigate("/");
   }
   return (

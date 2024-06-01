@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Textarea } from "@nextui-org/react";
-import { Button } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import { CameraIcon } from "../miscellaneous/CameraIcon";
 import axios from "axios";
+
 
 function UserHomepagePosting({ onPostCreated }) {
   const [caption, setCaption] = useState("");
@@ -51,9 +52,17 @@ function UserHomepagePosting({ onPostCreated }) {
           variant="flat"
           color="primary"
           size="small"
-          onClick={createPost}
+          type = "file"
+          
           className="flex items-center space-x-2 my-5"
         >
+          <input
+          onChange={(e) => setImage(e.target.files[0])}
+       
+       
+        type="file"
+      />
+
           <CameraIcon />
         </Button>
         <Button

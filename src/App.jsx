@@ -5,6 +5,7 @@ import UserLogin from "./pages/user/UserLogin";
 import UserHomepage from "./pages/user/UserHomepage";
 import MyProfilePage from "./pages/user/MyProfilePage";
 import NavbarAll from "./components/miscellaneous/NavbarAll";
+
 import PrivateRoute from "./Routing/PrivateRoute";
 import PublicRoute from "./Routing/PublicRoute";
 
@@ -19,6 +20,8 @@ function App() {
               <Route path="/" element={<UserLogin />} />
               <Route path="/user/signup" element={<UserSignUp />} />
               <Route path="/user/login" element={<UserLogin />} />
+              
+
             </Route>
             <Route element={<PrivateRoute />}>
               <Route path="/user/homepage" element={<UserHomepage />} />

@@ -31,7 +31,7 @@ import { EditIcon } from "../miscellaneous/EditIcon";
 
 
 
-export default function UserPost({currentUserId, post }) {
+export default function CurrentUserPost({currentUserId, post }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -186,10 +186,8 @@ export default function UserPost({currentUserId, post }) {
     <div className="my-4 max-w-[700px] px-8">
       <Card isFooterBlurred className="w-full h-[300px]">
         <CardHeader className="absolute z-10 top-1 flex-col items-start">
-          <p className="text-tiny text-white/60 uppercase font-bold">
-            {post.postedBy}
-          </p>
-          <h4 className="text-white/90 font-medium text-xl">{post.caption}</h4>
+          
+         
         </CardHeader>
         <Image
           removeWrapper
@@ -219,7 +217,9 @@ export default function UserPost({currentUserId, post }) {
             >
               <MessageCircle />
               <span>{comments.length}</span>
-            </Button>
+            </Button> 
+            <h4 className="text-white/90 text-s">{post.caption}</h4>
+        
           </div>
         </CardFooter>
       </Card>

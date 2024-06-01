@@ -236,13 +236,14 @@ export default function UserPost({currentUserId, post }) {
             {comments &&
               comments.map((comment) => (
                 <div key={comment._id} className="border-b pb-2">
-                  <p className="font-semibold">{comment.commentedBy}</p>
-                  <p>{comment.content}</p>  {currentUserId === comment.user && 
+                  <p>{comment.commentedBy}</p>
+                  <p className="font-semibold">{comment.content}</p>  {currentUserId === comment.user && 
                   <div className="flex gap-4 items-center"> 
                     <Button onClick={() => {deleteComment(comment._id)}} color="danger" variant="bordered">
                       Delete 
                     </Button>
                     <Button
+                    key = "opaque"
                       onPress={() => handleEditComment(comment)}
                       color="primary"
                     >

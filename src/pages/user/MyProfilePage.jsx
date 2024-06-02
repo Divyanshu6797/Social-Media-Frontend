@@ -1,56 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Input, Textarea } from '@nextui-org/react';
-import CurrentUserPost from '@/components/user/CurrentUserPost';
-import FollowersComponent from '@/components/user/FollowersComponent';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Button, Input, Textarea } from "@nextui-org/react";
+import CurrentUserPost from "@/components/user/CurrentUserPost";
+import FollowersComponent from "@/components/user/FollowersComponent";
+import axios from "axios";
+import { set } from "react-hook-form";
 
 const MyProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState("")
+  const [currentUserId, setCurrentUserId] = useState("");
   const [allPosts, setAllPosts] = useState([]);
-  const [user, setUser] = useState({
-    image: 'https://nextui-docs-v2.vercel.app/images/album-cover.png',
-    bio: 'This is the bio.',
-    name: 'John Doe',
-    username: 'johndoe',
-    email: 'john.doe@example.com',
-    phone: '123-456-7890',
-  });
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [emailID, setEmailID] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
+  const [bio, setBio] = useState("");
 
   const [posts, setPosts] = useState([
-    'Post 1: Lorem ipsum dolor sit amet.',
-    'Post 2: Consectetur adipiscing elit.',
-    'Post 3: Integer molestie lorem at massa.',
+    "Post 1: Lorem ipsum dolor sit amet.",
+    "Post 2: Consectetur adipiscing elit.",
+    "Post 3: Integer molestie lorem at massa.",
   ]);
 
   const [followers, setFollowers] = useState([
-    { name: 'Jane Smith', username: 'janesmith' },
-    { name: 'Bob Johnson', username: 'bobjohnson' },
-    { name: 'Alice Brown', username: 'alicebrown' },
+    { name: "Jane Smith", username: "janesmith" },
+    { name: "Bob Johnson", username: "bobjohnson" },
+    { name: "Alice Brown", username: "alicebrown" },
   ]);
-
-  
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
-
-
-  };
 
   const fetchUserPosts = async () => {
     try {
       const token = localStorage.getItem("auth-token");
       const headers = {
-        Authorization:
-          token
+        Authorization: token,
       };
-      const response = await axios.get("https://social-media-backend-hq87.onrender.com/api/user/post/userposts", {
-        
-        headers
-      });
+      const response = await axios.get(
+        "https://social-media-backend-hq87.onrender.com/api/user/post/userposts",
+        {
+          headers,
+        }
+      );
 
-      
       const posts = await response.data;
       setAllPosts(posts);
       console.log(posts);
@@ -59,33 +48,70 @@ const MyProfilePage = () => {
     }
   };
 
-  const findCurrentUser = async () => {
+  const edituserInfo = async () => {
     try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+      };
+      const response = await axios.put(
+        "https://social-media-backend-hq87.onrender.com/api/user/editprofile",
+        {
+          name,
+          username,
+          emailID,
+          phoneNo,
+          bio,
+        },
+        {
+          headers,
+        }
+      );
+      console.log("response data error", response.data.error);
+      if (response.status == 200) {
+        console.log("User data updated successfully");
+        
+        
+      } 
+    } catch (error) {
+      console.log("Error updating user data:", error);
       
+    }
+  };
+
+  const findCurrentUserInfo = async () => {
+    try {
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
       };
 
-      const response = await axios.get('https://social-media-backend-hq87.onrender.com/api/user/getuserid', {
-        headers,
-        
-      });
-      const userId = response.data;
-      console.log("userId", userId);
-      setCurrentUserId(userId);
-      
+      const response = await axios.get(
+        "https://social-media-backend-hq87.onrender.com/api/user/fetchcurrentuserinfo",
+        {
+          headers,
+        }
+      );
+      setCurrentUserId(response.data.user._id);
+
+      const newUser = response.data.user;
+      console.log("newUser", newUser);
+
+      const { name, username, emailID, phoneNo, bio } = newUser;
+      console.log("user details : ", name, username, emailID, phoneNo, bio);
+      setName(name);
+      setUsername(username);
+      setEmailID(emailID);
+      setPhoneNo(phoneNo);
+      setBio(bio);
     } catch (error) {
-      console.error("Error finding current user:", error);
+      console.error("Error finding current user info:", error);
     }
-
-  }
+  };
   useEffect(() => {
-    findCurrentUser();
-    fetchUserPosts();
-    console.log(allPosts)
-    
+    findCurrentUserInfo();
 
+    fetchUserPosts();
   }, []);
 
   return (
@@ -93,62 +119,75 @@ const MyProfilePage = () => {
       <div className="w-full md:w-1/2 p-5 bg-white shadow-lg rounded-lg">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">My Profile</h2>
-          <Button auto flat onClick={() => setIsEditing(!isEditing)}>
-            {isEditing ? 'Save' : 'Edit'}
+          <Button
+            auto
+            flat
+            onClick={() => {
+              setIsEditing(!isEditing);
+              if (isEditing) {
+                edituserInfo();
+              }
+            }}
+          >
+            {isEditing ? "Save" : "Edit"}
           </Button>
         </div>
         <div className="mt-5">
-          <img src="https://nextui-docs-v2.vercel.app/images/album-cover.png" alt="Profile" className="w-32 h-32 rounded-full mx-auto" />
+          <img
+            src="https://nextui-docs-v2.vercel.app/images/album-cover.png"
+            alt="Profile"
+            className="w-32 h-32 rounded-full mx-auto"
+          />
           {isEditing ? (
             <>
               <Input
                 label="Name"
                 fullWidth
-                value={user.name}
+                value={name}
                 name="name"
-                onChange={handleInputChange}
+                onChange={(e) => setName(e.target.value)}
                 className="mt-4"
               />
               <Input
                 label="Username"
                 fullWidth
-                value={user.username}
+                value={username}
                 name="username"
-                onChange={handleInputChange}
+                onChange={(e) => setUsername(e.target.value)}
                 className="mt-4"
               />
               <Input
                 label="Email"
                 fullWidth
-                value={user.email}
+                value={emailID}
                 name="email"
-                onChange={handleInputChange}
+                onChange={(e) => setEmailID(e.target.value)}
                 className="mt-4"
               />
               <Input
                 label="Phone"
                 fullWidth
-                value={user.phone}
+                value={phoneNo}
                 name="phone"
-                onChange={handleInputChange}
+                onChange={(e) => setPhoneNo(e.target.value)}
                 className="mt-4"
               />
               <Textarea
                 label="Bio"
                 fullWidth
-                value={user.bio}
+                value={bio}
                 name="bio"
-                onChange={handleInputChange}
+                onChange={(e) => setBio(e.target.value)}
                 className="mt-4"
               />
             </>
           ) : (
             <>
-              <p className="text-center mt-4 font-semibold">{user.name}</p>
-              <p className="text-center mt-2">@{user.username}</p>
-              <p className="text-center mt-2">{user.email}</p>
-              <p className="text-center mt-2">{user.phone}</p>
-              <p className="text-center mt-4">{user.bio}</p>
+              <p className="text-center mt-4 font-semibold">{name}</p>
+              <p className="text-center mt-2">@{username}</p>
+              <p className="text-center mt-2">{emailID}</p>
+              <p className="text-center mt-2">{phoneNo}</p>
+              <p className="text-center mt-4">{bio}</p>
             </>
           )}
         </div>
@@ -157,8 +196,7 @@ const MyProfilePage = () => {
         <div className="mt-8">
           <h3 className="text-xl font-semibold">Followers</h3>
           <ul className="mt-4 space-y-2">
-            
-           <FollowersComponent/>
+            <FollowersComponent />
           </ul>
         </div>
       </div>
@@ -166,9 +204,14 @@ const MyProfilePage = () => {
       <div className="w-full md:w-1/2 p-5 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-semibold">My Posts</h2>
         <div className="mt-5 space-y-4">
-          { allPosts && allPosts.map((post, index) => (
-            <CurrentUserPost currentUserId ={currentUserId} post = {post} key={index} />
-          ))}
+          {allPosts &&
+            allPosts.map((post, index) => (
+              <CurrentUserPost
+                currentUserId={currentUserId}
+                post={post}
+                key={index}
+              />
+            ))}
         </div>
       </div>
     </div>

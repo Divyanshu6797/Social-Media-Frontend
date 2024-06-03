@@ -207,6 +207,10 @@ const MyProfilePage = () => {
           {allPosts &&
             allPosts.map((post, index) => (
               <CurrentUserPost
+              allPosts={allPosts}
+              setAllPosts={setAllPosts}
+              
+
                 currentUserId={currentUserId}
                 post={post}
                 key={index}

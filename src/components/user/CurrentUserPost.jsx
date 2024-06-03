@@ -20,18 +20,19 @@ import {
   Button,
   Textarea,
 } from "@nextui-org/react";
-import { Heart, MessageCircle, Edit, Trash } from "lucide-react";
+import { Heart, MessageCircle,MoreHorizontal } from "lucide-react";
 import * as jwtDecode from 'jwt-decode';
 import { EyeIcon } from "../miscellaneous/EyeIcon";
 import { DeleteIcon } from "lucide-react";
 import { EditIcon } from "../miscellaneous/EditIcon";
+import { set } from "react-hook-form";
 
 
 
 
 
 
-export default function CurrentUserPost({currentUserId, post }) {
+export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, post }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -40,6 +41,8 @@ export default function CurrentUserPost({currentUserId, post }) {
   const [isLiked, setIsLiked] = useState(false);
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentContent, setEditCommentContent] = useState("");
+  const [isEditPostOpen, setIsEditPostOpen] = useState(false);
+  const [newCaption, setNewCaption] = useState(post.caption);
   
   const addCommentToPost = async () => {
     if (commentText.trim() !== "") {
@@ -175,7 +178,68 @@ export default function CurrentUserPost({currentUserId, post }) {
       console.error("Error deleting comment:", error);
     }
   };
-  
+
+  const updatePost = async () => {
+    
+      try {
+        const token = localStorage.getItem("auth-token");
+        const headers = {
+          Authorization: token,
+        
+        };
+        const response = await axios.put(
+          "https://social-media-backend-hq87.onrender.com/api/user/post/editpost",
+          {
+            caption: newCaption,
+            postId: post._id,
+          },
+          { headers }
+        );
+        if(response.status !== 200) {
+          return console.log("Error updating post:", response.data.message);
+        }
+        const updatedPostFront = response.data;
+        console.log("updated post", updatedPostFront)
+        console.log(post._id)
+        
+        setAllPosts((prevPosts) =>
+          prevPosts.map((p) =>
+            p._id === updatedPostFront.updatedPost._id ? updatedPostFront.updatedPost : p
+          )
+        );
+        setNewCaption(updatedPostFront.updatedPost.caption);
+        setIsEditPostOpen(false);
+      } catch (error) {
+        setIsEditPostOpen(false);
+        console.error("Error updating post:", error);
+      }
+    
+  }
+  const deletePost = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+      };
+      const response = await axios.delete(
+        "https://social-media-backend-hq87.onrender.com/api/user/post/deletepostanditscomments",
+        {
+          headers,
+          data: { postId: post._id },
+        }
+      );
+      if (response.status !== 200) {
+        return console.log("Error deleting post:", response.data.message);
+      }
+      setAllPosts((prevPosts) =>
+        prevPosts.filter((p) => p._id !== post._id)
+      );
+      setIsEditPostOpen(false);
+    } catch (error) {
+      setIsEditPostOpen(false);
+      console.error("Error deleting post:", error);
+    }
+  }
   useEffect(() => {
   
     
@@ -186,6 +250,15 @@ export default function CurrentUserPost({currentUserId, post }) {
     <div className="my-4 max-w-[700px] px-8">
       <Card isFooterBlurred className="w-full h-[300px]">
         <CardHeader className="absolute z-10 top-1 flex-col items-start">
+        <Button
+            auto
+            light
+            className="absolute top-2 right-2"
+            onClick={() => setIsEditPostOpen(!isEditPostOpen)}
+            
+          >
+            <MoreHorizontal size={24} />
+          </Button>
           
          
         </CardHeader>
@@ -263,6 +336,7 @@ export default function CurrentUserPost({currentUserId, post }) {
 
                 </div>
               ))}
+
           </div>
         </div>
       )}
@@ -299,7 +373,52 @@ export default function CurrentUserPost({currentUserId, post }) {
             )}
           </ModalContent>
         </Modal>
+
+
+
+
+
+
+
+
+
+
+
       )}
+
+
+
+
+<Modal isOpen={isEditPostOpen} onOpenChange={setIsEditPostOpen}>
+        <ModalContent>
+          <ModalHeader>Edit Post</ModalHeader>
+          <ModalBody>
+            <Input
+              fullWidth
+              value={newCaption}
+              onChange={(e) => setNewCaption(e.target.value)}
+              
+              
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button 
+            color="primary"
+            onClick = {updatePost} >
+              Update
+            </Button>
+            <Button 
+            color="danger"
+            onClick={deletePost}>
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+
+
+
     </div>
   );
 }

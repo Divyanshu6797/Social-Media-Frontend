@@ -8,6 +8,8 @@ import NavbarAll from "./components/miscellaneous/NavbarAll";
 
 import PrivateRoute from "./Routing/PrivateRoute";
 import PublicRoute from "./Routing/PublicRoute";
+import FollowersPage from "./pages/followers/FollowersPage";
+// import MyChatPage from "./pages/user/MyChatPage";
 
 function App() {
   return (
@@ -26,7 +28,9 @@ function App() {
             <Route element={<PrivateRoute />}>
               <Route path="/user/homepage" element={<UserHomepage />} />
               <Route path="/user/myprofile" element={<MyProfilePage />} />
+              <Route path="/user/followers" element={<FollowersPage/>} />
             </Route>
+           
           </Routes>
         </div>
       </BrowserRouter>

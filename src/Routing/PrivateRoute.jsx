@@ -8,7 +8,7 @@ function PrivateRoute() {
     useEffect(() => {
         const token = localStorage.getItem("auth-token");
 
-        if (!token && (location.pathname === "/user/homepage" || location.pathname === "/user/myprofile")) {
+        if (!token && (location.pathname === "/user/homepage" || location.pathname === "/user/myprofile" || location.pathname === "/user/followers")) {
             navigate("/");
         }
     }, [location, navigate]);

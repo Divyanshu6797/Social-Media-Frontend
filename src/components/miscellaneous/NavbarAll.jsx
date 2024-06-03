@@ -48,6 +48,11 @@ function NavbarAll() {
         </Button>
         
       </NavbarItem>
+      <NavbarItem>
+        <Link href="/user/followers" color="foreground">
+          Followers
+        </Link>
+      </NavbarItem>
     </NavbarContent>
 
     <NavbarContent as="div" justify="end">

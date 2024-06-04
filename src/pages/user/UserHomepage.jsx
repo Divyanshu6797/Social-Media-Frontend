@@ -6,13 +6,13 @@ import axios from "axios";
 
 function UserHomepage() {
   const [allPosts, setAllPosts] = useState([]);
-  const [currentUserId, setCurrentUserId] = useState("")
+  const [currentUserId, setCurrentUserId] = useState("");
+  
   const fetchPosts = async () => {
     try {
       const token = localStorage.getItem("auth-token");
       const headers = {
-        Authorization:
-          token
+        Authorization: token
       };
       const response = await axios.get(
         "https://social-media-backend-hq87.onrender.com/api/user/post/allposts",
@@ -28,7 +28,6 @@ function UserHomepage() {
 
   const findCurrentUser = async () => {
     try {
-      
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
@@ -36,18 +35,14 @@ function UserHomepage() {
 
       const response = await axios.get('https://social-media-backend-hq87.onrender.com/api/user/getuserid', {
         headers,
-        
       });
       const userId = response.data;
       console.log("userId", userId);
       setCurrentUserId(userId);
-      
     } catch (error) {
       console.error("Error finding current user:", error);
     }
-
   }
-
 
   useEffect(() => {
     findCurrentUser();
@@ -61,17 +56,16 @@ function UserHomepage() {
 
   return (
     <div className="max-w-[900px] mx-auto px-8">
-      <div className="grid grid-cols-1 gap-4">
-        <div className="col-span-1">
-          <UserHomepagePosting onPostCreated={handlePostCreated}/>
-
-          {allPosts && allPosts.map((post) => (
-            <UserPost currentUserId = {currentUserId} key={post._id} post={post} />
-          ))
-        }
-
-         
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2">
+          <UserHomepagePosting onPostCreated={handlePostCreated} />
         </div>
+
+        {allPosts && allPosts.map((post) => (
+          <div key={post._id} className="col-span-1">
+            <UserPost currentUserId={currentUserId} post={post} />
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -36,10 +36,12 @@ export default function UserPost({currentUserId, post }) {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([]);
-  const [likes, setLikes] = useState(post.likes);
-  const [isLiked, setIsLiked] = useState(false);
+  
+  
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentContent, setEditCommentContent] = useState("");
+  const[likesSize, setLikesSize] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
   
   const addCommentToPost = async () => {
     if (commentText.trim() !== "") {
@@ -97,10 +99,6 @@ export default function UserPost({currentUserId, post }) {
     setShowComments((prev) => !prev);
   };
 
-  const handleToggleLike = () => {
-    setIsLiked((prev) => !prev);
-    setLikes((prev) => (isLiked ? prev - 1 : prev + 1));
-  };
 
   const handleEditComment = (comment) => {
     setEditCommentId(comment._id);
@@ -175,15 +173,116 @@ export default function UserPost({currentUserId, post }) {
       console.error("Error deleting comment:", error);
     }
   };
+
+  const fetchLikes = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        "Content-Type": "application/json",
+        
+      };
+      
+      const response = await axios.get(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/fetchlikesonapost",
+        {
+          params: {
+            postId: post._id,
+          },
+          headers: headers,
+        }
+      );
+      const fetchedLikes = await response.data;
+      setLikesSize(fetchedLikes.length);
+      console.log("fetched likes", typeof fetchedLikes.length);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+    }
+  };
+  const likePost = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        
+      };
+      const response = await axios.post(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/likeapost",
+        {
+          postId: post._id,
+        },
+        { headers }
+      );
+      const like = await response.data;
+      setLikesSize(likesSize + 1);
+      setIsLiked(true);
+      console.log("like", like);
+      fetchLikes();
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  }
+
+  const unLikePost = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        
+      };
+      const response = await axios.delete(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/unlikeapost",
+        {
+          headers,
+          data: { postId: post._id },
+        }
+      );
+      const like = await response.data;
+      setLikesSize(likesSize - 1);
+      setIsLiked(false);
+      console.log("unlike", like);
+      fetchLikes();
+    } catch (error) {
+      console.error("Error unliking post:", error);
+    }
+  
+  }
+
+  const findIfPostIsLiked = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.get(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/findifapostisliked",
+        {
+          params: {
+            postId: post._id,
+          },
+          headers: headers,
+        }
+      );
+      const fetchedLike = response.data;
+      setIsLiked(fetchedLike.booleanVal);
+      console.log("isLiked",isLiked)
+      console.log("fetched like", fetchedLike);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+    }
+  }
   
   useEffect(() => {
+    findIfPostIsLiked();
+    fetchLikes();
   
     
     fetchComments();
   }, []);
 
   return (
-    <div className="my-4 max-w-[700px] px-8">
+    <div className="my-4 max-w-[700px]">
       <Card isFooterBlurred className="w-full h-[300px]">
         <CardHeader className="absolute z-10 top-1 flex-col items-start">
           <p className="text-tiny text-white/60 uppercase font-bold">
@@ -203,13 +302,13 @@ export default function UserPost({currentUserId, post }) {
               radius="full"
               size="sm"
               className="flex items-center space-x-1"
-              onClick={handleToggleLike}
+              onClick={isLiked ? unLikePost : likePost}
             >
               <Heart
                 color={isLiked ? "red" : "white"}
                 fill={isLiked ? "red" : "none"}
               />
-              <span>{likes}</span>
+              <span>{likesSize}</span>
             </Button>
             <Button
               radius="full"

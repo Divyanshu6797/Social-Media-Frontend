@@ -10,7 +10,7 @@ import {
   Checkbox,
   Input,
   Link,
-  Tooltip
+  Tooltip,
 } from "@nextui-org/react";
 import {
   Card,
@@ -20,30 +20,31 @@ import {
   Button,
   Textarea,
 } from "@nextui-org/react";
-import { Heart, MessageCircle,MoreHorizontal } from "lucide-react";
-import * as jwtDecode from 'jwt-decode';
+import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
+import * as jwtDecode from "jwt-decode";
 import { EyeIcon } from "../miscellaneous/EyeIcon";
 import { DeleteIcon } from "lucide-react";
 import { EditIcon } from "../miscellaneous/EditIcon";
 import { set } from "react-hook-form";
 
-
-
-
-
-
-export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, post }) {
+export default function CurrentUserPost({
+  allPosts,
+  setAllPosts,
+  currentUserId,
+  post,
+}) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([]);
-  const [likes, setLikes] = useState(post.likes);
+  
   const [isLiked, setIsLiked] = useState(false);
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentContent, setEditCommentContent] = useState("");
   const [isEditPostOpen, setIsEditPostOpen] = useState(false);
   const [newCaption, setNewCaption] = useState(post.caption);
-  
+  const[likesSize, setLikesSize] = useState(0);
+
   const addCommentToPost = async () => {
     if (commentText.trim() !== "") {
       try {
@@ -63,7 +64,11 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
         const comment = await response.data;
         setComments([
           ...comments,
-          { _id: comment._id, commentedBy: comment.user, content: comment.content },
+          {
+            _id: comment._id,
+            commentedBy: comment.user,
+            content: comment.content,
+          },
         ]);
         setCommentText("");
         // Fetch comments again to ensure the latest data is displayed
@@ -73,7 +78,6 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
       }
     }
   };
-  
 
   const fetchComments = async () => {
     try {
@@ -82,15 +86,18 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
         Authorization: token,
         "Content-Type": "application/json",
       };
-      const response = await axios.get("https://social-media-backend-hq87.onrender.com/api/user/comment/fetchcomments", {
-        params: {
-          postId: post._id,
-        },
-        headers: headers,
-      });
+      const response = await axios.get(
+        "https://social-media-backend-hq87.onrender.com/api/user/comment/fetchcomments",
+        {
+          params: {
+            postId: post._id,
+          },
+          headers: headers,
+        }
+      );
       const fetchedComments = await response.data;
       setComments(fetchedComments);
-      console.log("fetched comments", fetchedComments)
+      console.log("fetched comments", fetchedComments);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -100,10 +107,7 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
     setShowComments((prev) => !prev);
   };
 
-  const handleToggleLike = () => {
-    setIsLiked((prev) => !prev);
-    setLikes((prev) => (isLiked ? prev - 1 : prev + 1));
-  };
+  
 
   const handleEditComment = (comment) => {
     setEditCommentId(comment._id);
@@ -146,75 +150,77 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
     setComments((prevComments) =>
       prevComments.filter((comment) => comment._id !== commentId)
     );
-  
+
     try {
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
         "Content-Type": "application/json",
       };
-  
-      const response = await axios.delete('https://social-media-backend-hq87.onrender.com/api/user/comment/deletecomment', {
-        headers,
-        data: { commentId },
-      });
-  
+
+      const response = await axios.delete(
+        "https://social-media-backend-hq87.onrender.com/api/user/comment/deletecomment",
+        {
+          headers,
+          data: { postId : post._id},
+        }
+      );
+
       if (response.status !== 200) {
         // If the delete operation failed, revert the state
         setComments((prevComments) => [
           ...prevComments,
-          prevComments.find((comment) => comment._id === commentId)
+          prevComments.find((comment) => comment._id === commentId),
         ]);
         console.error("Error deleting comment:", response.data.message);
       } else {
-        console.log("successfully deleted comment")
+        console.log("successfully deleted comment");
       }
     } catch (error) {
       // Revert the state if there was an error
       setComments((prevComments) => [
         ...prevComments,
-        prevComments.find((comment) => comment._id === commentId)
+        prevComments.find((comment) => comment._id === commentId),
       ]);
       console.error("Error deleting comment:", error);
     }
   };
 
   const updatePost = async () => {
-    
-      try {
-        const token = localStorage.getItem("auth-token");
-        const headers = {
-          Authorization: token,
-        
-        };
-        const response = await axios.put(
-          "https://social-media-backend-hq87.onrender.com/api/user/post/editpost",
-          {
-            caption: newCaption,
-            postId: post._id,
-          },
-          { headers }
-        );
-        if(response.status !== 200) {
-          return console.log("Error updating post:", response.data.message);
-        }
-        const updatedPostFront = response.data;
-        console.log("updated post", updatedPostFront)
-        console.log(post._id)
-        
-        setAllPosts((prevPosts) =>
-          prevPosts.map((p) =>
-            p._id === updatedPostFront.updatedPost._id ? updatedPostFront.updatedPost : p
-          )
-        );
-        setNewCaption(updatedPostFront.updatedPost.caption);
-        setIsEditPostOpen(false);
-      } catch (error) {
-        setIsEditPostOpen(false);
-        console.error("Error updating post:", error);
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+      };
+      const response = await axios.put(
+        "https://social-media-backend-hq87.onrender.com/api/user/post/editpost",
+        {
+          caption: newCaption,
+          postId: post._id,
+        },
+        { headers }
+      );
+      if (response.status !== 200) {
+        return console.log("Error updating post:", response.data.message);
       }
-    
-  }
+      const updatedPostFront = response.data;
+      console.log("updated post", updatedPostFront);
+      console.log(post._id);
+
+      setAllPosts((prevPosts) =>
+        prevPosts.map((p) =>
+          p._id === updatedPostFront.updatedPost._id
+            ? updatedPostFront.updatedPost
+            : p
+        )
+      );
+      setNewCaption(updatedPostFront.updatedPost.caption);
+      setIsEditPostOpen(false);
+    } catch (error) {
+      setIsEditPostOpen(false);
+      console.error("Error updating post:", error);
+    }
+  };
   const deletePost = async () => {
     try {
       const token = localStorage.getItem("auth-token");
@@ -231,18 +237,116 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
       if (response.status !== 200) {
         return console.log("Error deleting post:", response.data.message);
       }
-      setAllPosts((prevPosts) =>
-        prevPosts.filter((p) => p._id !== post._id)
-      );
+      setAllPosts((prevPosts) => prevPosts.filter((p) => p._id !== post._id));
       setIsEditPostOpen(false);
     } catch (error) {
       setIsEditPostOpen(false);
       console.error("Error deleting post:", error);
     }
+  };
+
+  const fetchLikes = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        "Content-Type": "application/json",
+        
+      };
+      
+      const response = await axios.get(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/fetchlikesonapost",
+        {
+          params: {
+            postId: post._id,
+          },
+          headers: headers,
+        }
+      );
+      const fetchedLikes = await response.data;
+      setLikesSize(fetchedLikes.length);
+      console.log("fetched likes", typeof fetchedLikes.length);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+    }
+  };
+  const likePost = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        
+      };
+      const response = await axios.post(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/likeapost",
+        {
+          postId: post._id,
+        },
+        { headers }
+      );
+      const like = await response.data;
+      setLikesSize(likesSize + 1);
+      setIsLiked(true);
+      console.log("like", like);
+      fetchLikes();
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  }
+
+  const unLikePost = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        
+      };
+      const response = await axios.delete(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/unlikeapost",
+        {
+          headers,
+          data: { postId: post._id },
+        }
+      );
+      const like = await response.data;
+      setLikesSize(likesSize - 1);
+      setIsLiked(false);
+      console.log("unlike", like);
+      fetchLikes();
+    } catch (error) {
+      console.error("Error unliking post:", error);
+    }
+  
+  }
+
+  const findIfPostIsLiked = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const headers = {
+        Authorization: token,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.get(
+        "https://social-media-backend-hq87.onrender.com/api/user/like/findifapostisliked",
+        {
+          params: {
+            postId: post._id,
+          },
+          headers: headers,
+        }
+      );
+      const fetchedLike = await response.data;
+      setIsLiked(fetchedLike.booleanVal);
+      console.log("isLiked",isLiked)
+      console.log("fetched like", fetchedLike);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+    }
   }
   useEffect(() => {
-  
-    
+    findIfPostIsLiked();
+    fetchLikes();
+
     fetchComments();
   }, []);
 
@@ -250,23 +354,20 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
     <div className="my-4 max-w-[700px] px-8">
       <Card isFooterBlurred className="w-full h-[300px]">
         <CardHeader className="absolute z-10 top-1 flex-col items-start">
-        <Button
+          <Button
             auto
             light
             className="absolute top-2 right-2"
             onClick={() => setIsEditPostOpen(!isEditPostOpen)}
-            
           >
             <MoreHorizontal size={24} />
           </Button>
-          
-         
         </CardHeader>
         <Image
           removeWrapper
           alt="Post background"
           className="z-0 w-full h-full object-cover"
-          src="https://app.requestly.io/delay/5000/https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"   // put here
+          src="https://app.requestly.io/delay/5000/https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg" // put here
         />
         <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100 flex justify-between items-center w-full">
           <div className="flex items-center space-x-2">
@@ -274,13 +375,25 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
               radius="full"
               size="sm"
               className="flex items-center space-x-1"
-              onClick={handleToggleLike}
+              onClick={() => 
+                {if(isLiked)
+                  {
+                    unLikePost();
+                  }
+                  else {
+                    likePost();
+
+                  }
+                  
+                  
+                }}
             >
               <Heart
                 color={isLiked ? "red" : "white"}
                 fill={isLiked ? "red" : "none"}
+
               />
-              <span>{likes}</span>
+              <span>{likesSize}</span>
             </Button>
             <Button
               radius="full"
@@ -290,9 +403,8 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
             >
               <MessageCircle />
               <span>{comments.length}</span>
-            </Button> 
+            </Button>
             <h4 className="text-white/90 text-s">{post.caption}</h4>
-        
           </div>
         </CardFooter>
       </Card>
@@ -311,32 +423,37 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
             className="bg-blue-500 text-white mb-4"
             onClick={addCommentToPost}
           >
-            Comment 
+            Comment
           </Button>
           <div className="space-y-4">
             {comments &&
               comments.map((comment) => (
                 <div key={comment._id} className="border-b pb-2">
                   <p>{comment.commentedBy}</p>
-                  <p className="font-semibold">{comment.content}</p>  {currentUserId === comment.user && 
-                  <div className="flex gap-4 items-center"> 
-                    <Button onClick={() => {deleteComment(comment._id)}} color="danger" variant="bordered">
-                      Delete 
-                    </Button>
-                    
-                    <Button
-                    key = "opaque"
-                      onPress={() => handleEditComment(comment)}
-                      color="primary"
-                    >
-                      Edit
-                    </Button>
-                  </div>
-}
+                  <p className="font-semibold">{comment.content}</p>{" "}
+                  {currentUserId === comment.user && (
+                    <div className="flex gap-4 items-center">
+                      <Button
+                        onClick={() => {
+                          deleteComment(comment._id);
+                        }}
+                        color="danger"
+                        variant="bordered"
+                      >
+                        Delete
+                      </Button>
 
+                      <Button
+                        key="opaque"
+                        onPress={() => handleEditComment(comment)}
+                        color="primary"
+                      >
+                        Edit
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
-
           </div>
         </div>
       )}
@@ -373,23 +490,9 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
             )}
           </ModalContent>
         </Modal>
-
-
-
-
-
-
-
-
-
-
-
       )}
 
-
-
-
-<Modal isOpen={isEditPostOpen} onOpenChange={setIsEditPostOpen}>
+      <Modal isOpen={isEditPostOpen} onOpenChange={setIsEditPostOpen}>
         <ModalContent>
           <ModalHeader>Edit Post</ModalHeader>
           <ModalBody>
@@ -397,28 +500,18 @@ export default function CurrentUserPost({allPosts, setAllPosts,currentUserId, po
               fullWidth
               value={newCaption}
               onChange={(e) => setNewCaption(e.target.value)}
-              
-              
             />
           </ModalBody>
           <ModalFooter>
-            <Button 
-            color="primary"
-            onClick = {updatePost} >
+            <Button color="primary" onClick={updatePost}>
               Update
             </Button>
-            <Button 
-            color="danger"
-            onClick={deletePost}>
+            <Button color="danger" onClick={deletePost}>
               Delete
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-
-
-
-
     </div>
   );
 }

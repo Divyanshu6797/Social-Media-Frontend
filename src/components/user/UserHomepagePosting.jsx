@@ -36,7 +36,7 @@ function UserHomepagePosting({ onPostCreated }) {
   useEffect(() => {}, []);
 
   return (
-    <div className="w-full ml-0 md:ml-0 max-w-[700px] mx-auto px-4 py-8 bg-white rounded-lg shadow-lg">
+    <div className="w-full ml-0 md:ml-0 max-w-[700px] mx-auto px-8 py-8 bg-white rounded-lg shadow-lg">
       <Textarea
         key="flat"
         variant="flat"

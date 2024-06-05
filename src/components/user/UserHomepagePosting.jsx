@@ -12,7 +12,8 @@ function UserHomepagePosting({ onPostCreated }) {
   const uploadImage = async (e) => {
     if (image == null) {
       console.log("No image");
-      alert("No image");
+      return alert("No image");
+      
     } else {
       const data = new FormData();
       data.append("file", image);
@@ -37,8 +38,8 @@ function UserHomepagePosting({ onPostCreated }) {
       const headers = {
         Authorization: token,
       };
-      uploadImage();
-      console.log("image", image)
+      
+      
       const response = await axios.post(
         "https://social-media-backend-hq87.onrender.com/api/user/post/addpost",
         {
@@ -77,10 +78,13 @@ function UserHomepagePosting({ onPostCreated }) {
           size="small"
           type="file"
           className="flex items-center space-x-2 my-5"
+          onClick= {uploadImage}
         >
+          
           <input onChange={(e) => setImage(e.target.files[0])} type="file" />
 
           <CameraIcon />
+          click to upload image
         </Button>
         <Button
           radius="full"

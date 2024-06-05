@@ -294,7 +294,7 @@ export default function UserPost({currentUserId, post }) {
           removeWrapper
           alt="Post background"
           className="z-0 w-full h-full object-cover"
-          src="https://app.requestly.io/delay/5000/https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"   // put here
+          src={post.imageUrl}   // put here
         />
         <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100 flex justify-between items-center w-full">
           <div className="flex items-center space-x-2">
@@ -318,7 +318,7 @@ export default function UserPost({currentUserId, post }) {
             >
               <MessageCircle />
               <span>{comments.length}</span>
-            </Button>
+            </Button> {post.caption}
           </div>
         </CardFooter>
       </Card>

@@ -4,19 +4,41 @@ import { Button, Input } from "@nextui-org/react";
 import { CameraIcon } from "../miscellaneous/CameraIcon";
 import axios from "axios";
 
-
 function UserHomepagePosting({ onPostCreated }) {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState("");
   const [err, setErr] = useState("");
 
+  const uploadImage = async (e) => {
+    if (image == null) {
+      console.log("No image");
+      alert("No image");
+    } else {
+      const data = new FormData();
+      data.append("file", image);
+      data.append("upload_preset", "Socialapp");
+      data.append("cloud_name", "dzclpwy78");
+
+      await fetch("https://api.cloudinary.com/v1_1/dzclpwy78/image/upload", {
+        method: "post",
+        body: data,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setImage(data.url);
+        });
+    }
+  };
+
   const createPost = async () => {
     try {
       const token = localStorage.getItem("auth-token");
       const headers = {
-        Authorization:
-          token,
+        Authorization: token,
       };
+      uploadImage();
+      console.log("image", image)
       const response = await axios.post(
         "https://social-media-backend-hq87.onrender.com/api/user/post/addpost",
         {
@@ -25,6 +47,7 @@ function UserHomepagePosting({ onPostCreated }) {
         },
         { headers }
       );
+
       const post = await response.data;
       onPostCreated(post);
       console.log("post created", post);
@@ -52,16 +75,10 @@ function UserHomepagePosting({ onPostCreated }) {
           variant="flat"
           color="primary"
           size="small"
-          type = "file"
-          
+          type="file"
           className="flex items-center space-x-2 my-5"
         >
-          <input
-          onChange={(e) => setImage(e.target.files[0])}
-       
-       
-        type="file"
-      />
+          <input onChange={(e) => setImage(e.target.files[0])} type="file" />
 
           <CameraIcon />
         </Button>

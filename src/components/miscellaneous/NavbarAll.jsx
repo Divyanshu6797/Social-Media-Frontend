@@ -2,9 +2,9 @@ import React from 'react'
 import { AcmeLogo } from './AcmeLogo'
 
 
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link , useNavigate } from 'react-router-dom';
 import { Button } from '@nextui-org/react';
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
 
 
 
@@ -27,17 +27,17 @@ function NavbarAll() {
 
     <NavbarContent className="hidden sm:flex gap-4" justify="center">
       <NavbarItem>
-        <Link href="/user/signup" color="foreground">
+        <Link to="/user/signup" color="foreground">
           Home
         </Link>
       </NavbarItem>
       <NavbarItem isActive>
-        <Link href="/user/signup" aria-current="page" color="secondary">
+        <Link to="/user/signup" aria-current="page" color="secondary">
           Create Account
         </Link>
       </NavbarItem>
       <NavbarItem>
-        <Link href= "/user/login" color="foreground">
+        <Link to= "/user/login" color="foreground">
           Login
         </Link>
         

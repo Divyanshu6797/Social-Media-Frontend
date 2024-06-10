@@ -9,12 +9,16 @@ function UserLogin() {
     const [emailID, setEmailID] = useState("");
     const [password, setPassword] = useState("");
     const [errDisplay, seterrDisplay] = useState("");
+    const [loginButtonText, setLoginButtonText] = useState("Login");
+    const [loggingIn, setLoggingIn] = useState(false);
     const navigate = useNavigate();
 
     
 
     const login = async (e) => {
       e.preventDefault();
+      setLoggingIn(true);
+      setLoginButtonText("Logging in...");
       const user = { emailID, password };
       try {
         const response = await axios.post("https://social-media-backend-hq87.onrender.com/api/user/login", user);
@@ -35,7 +39,11 @@ function UserLogin() {
           // seterrDisplay(response.error);
           
         }
+        setLoggingIn(false);
+        setLoginButtonText("Login");
       } catch (error) {
+        setLoggingIn(false);
+        setLoginButtonText("Login");
         console.log(error);
         console.error("Error:",error);
         // seterrDisplay(error);
@@ -67,8 +75,8 @@ function UserLogin() {
             value = {password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button onClick = {login} className="w-72 mt-4" auto>
-            Login
+          <Button onClick = {login} className="w-72 mt-4" auto isLoading = {loggingIn}>
+            {loginButtonText}
           </Button>
           <Button className="w-72 mt-2 bg-red-500 text-white" auto>
             Login with Google

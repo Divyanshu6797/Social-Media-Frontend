@@ -43,7 +43,8 @@ export default function CurrentUserPost({
   const [editCommentContent, setEditCommentContent] = useState("");
   const [isEditPostOpen, setIsEditPostOpen] = useState(false);
   const [newCaption, setNewCaption] = useState(post.caption);
-  const[likesSize, setLikesSize] = useState(0);
+  const [likesSize, setLikesSize] = useState(0);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const addCommentToPost = async () => {
     if (commentText.trim() !== "") {
@@ -223,6 +224,7 @@ export default function CurrentUserPost({
   };
   const deletePost = async () => {
     try {
+      setIsDeleted(true);
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
@@ -238,9 +240,12 @@ export default function CurrentUserPost({
         return console.log("Error deleting post:", response.data.message);
       }
       setAllPosts((prevPosts) => prevPosts.filter((p) => p._id !== post._id));
+      setIsDeleted(false);
       setIsEditPostOpen(false);
     } catch (error) {
+      setIsDeleted(false);
       setIsEditPostOpen(false);
+
       console.error("Error deleting post:", error);
     }
   };
@@ -506,7 +511,7 @@ export default function CurrentUserPost({
             <Button color="primary" onClick={updatePost}>
               Update
             </Button>
-            <Button color="danger" onClick={deletePost}>
+            <Button color="danger" onClick={deletePost} isLoading = {isDeleted}>
               Delete
             </Button>
           </ModalFooter>

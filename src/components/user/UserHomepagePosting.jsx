@@ -8,13 +8,17 @@ function UserHomepagePosting({ onPostCreated }) {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState("");
   const [err, setErr] = useState("");
+  const [isLoadingUploadButton, setIsLoadingUploadButton] = useState(false);
+  const [isLoadingPostButton, setIsLoadingPostButton] = useState(false);
 
   const uploadImage = async (e) => {
+
     if (image == null) {
       console.log("No image");
       return alert("No image");
       
     } else {
+      setIsLoadingUploadButton(true);
       const data = new FormData();
       data.append("file", image);
       data.append("upload_preset", "Socialapp");
@@ -29,11 +33,14 @@ function UserHomepagePosting({ onPostCreated }) {
           console.log(data);
           setImage(data.url);
         });
+
+        setIsLoadingUploadButton(false);
     }
   };
 
   const createPost = async () => {
     try {
+      setIsLoadingPostButton(true);
       const token = localStorage.getItem("auth-token");
       const headers = {
         Authorization: token,
@@ -52,7 +59,10 @@ function UserHomepagePosting({ onPostCreated }) {
       const post = await response.data;
       onPostCreated(post);
       console.log("post created", post);
+      setIsLoadingPostButton(false);
     } catch (error) {
+      setIsLoadingPostButton(false);
+      
       console.error("Error creating post:", error);
       setErr("Error creating post");
     }
@@ -72,16 +82,18 @@ function UserHomepagePosting({ onPostCreated }) {
       />
 
       <div className="flex items-center justify-between">
+      <input onChange={(e) => setImage(e.target.files[0])} type="file" />
         <Button
           variant="flat"
           color="primary"
           size="small"
           type="file"
           className="flex items-center space-x-2 my-5"
+          isLoading = {isLoadingUploadButton}
           onClick= {uploadImage}
         >
           
-          <input onChange={(e) => setImage(e.target.files[0])} type="file" />
+          
 
           <CameraIcon />
           click to upload image
@@ -90,6 +102,7 @@ function UserHomepagePosting({ onPostCreated }) {
           radius="full"
           className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white my-5"
           onClick={createPost}
+          isLoading = {isLoadingPostButton}
         >
           Post
         </Button>

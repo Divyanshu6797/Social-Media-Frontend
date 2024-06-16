@@ -49,7 +49,7 @@ function NavbarAll() {
         
       </NavbarItem>
       <NavbarItem>
-        <Link href="/user/followers" color="foreground">
+        <Link to="/user/followers" color="foreground">
           Followers
         </Link>
       </NavbarItem>
